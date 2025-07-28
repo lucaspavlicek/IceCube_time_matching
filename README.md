@@ -2,13 +2,15 @@ Code for matching the IceCube times (that have no GPS time, unfortunately) to GP
 
 ## pass1icecube:
 inputs:
-- decoded hitbuffer data for each channel
+decoded hitbuffer data for each channel
+
 tasks:
-- checks each channel to verify the times are valid and can be used for time matching
-- shifts the times in each channel by the same constant so that the times start at zero (to make life easier)
-- although the IceCube times are already 99.99% sorted, we fully sort the hits so they are all in order of time
+checks each channel to verify the times are valid and can be used for time matching
+shifts the times in each channel by the same constant so that the times start at zero (to make life easier)
+although the IceCube times are already 99.99% sorted, we fully sort the hits so they are all in order of time
+
 outputs:
-- a .csv file of hitbuffer data, shifted, and sorted by time, for each channel deemed to have working data
+a .csv file of hitbuffer data, shifted, and sorted by time, for each channel deemed to have working data
 
 ## pass2icecube:
   inputs:
