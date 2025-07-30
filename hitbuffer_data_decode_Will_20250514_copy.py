@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-@author: William
+@author: William and KIT
 Lucas's copy
 """
 
