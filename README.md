@@ -25,7 +25,7 @@ Since the hitbuffer decode adds its output files to the same input folder, the s
 
 ## pass1icecube.py:
 Inputs:
-- Decoded hitbuffer data for each channel (run_XXXXXXX_chan-Y_alldata.txt for each channel). The script will ask for an input directory; the input directory must contain the full file path for each day: run_XXXXXXX_YYYYMMDD/run_XXXXXXX/{data files}. There should be a run_XXXXXXX_chan-Y_alldata.txt for each scintillator (although if a few are missing, it is still fine).
+- Decoded hitbuffer data for each channel. The script will ask for an input directory; the input directory must contain the full file path for each day: run_XXXXXXX_YYYYMMDD/run_XXXXXXX/{data files}. There should be a run_XXXXXXX_chan-Y_alldata.txt for each scintillator (although if a few are missing, it is still fine).
 
   
 Tasks:
