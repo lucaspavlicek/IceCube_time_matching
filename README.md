@@ -1,6 +1,7 @@
 Code for matching the IceCube times (that have no GPS time, unfortunately) to GPS-timed Infill data, and then correcting the IceCube times to be in UTC.
 
 ## General notes:
+- The scripts are all encoded in utf-8 (as far as I can tell at least) which should run well on Linux machines but may have issues on other operating systems
 - Each of the passX... scripts is looking to get a date in the format of YYYYMMDD from either the command line, or if there is no input, it will ask the user to input a date. In addition, a couple of them are also looking for an input directory name. The scripts will likely have a problem if you try and run the code from a notebook.
 - The scripts after pass1icecube and pass2infill will work from the outputs of the previous scripts as is.
 - This allows us to easily industrialize the process with a shell script or something. An example shell script will be included.
@@ -8,7 +9,7 @@ Code for matching the IceCube times (that have no GPS time, unfortunately) to GP
 
 ## hitbuffer_data_decode_....py
 Inputs:
-- Uncompressed folders of IceCube data. There should be a run_XXXXXXX_chan-Y.bin for each scintillator (although if a few are missing, it is still fine).
+- Uncompressed folder of IceCube data. The script will ask for an input directory; the input directory must contain the full file path for each day: run_XXXXXXX_YYYYMMDD/run_XXXXXXX/{data files}. There should be a run_XXXXXXX_chan-Y.bin for each scintillator (although if a few are missing, it is still fine).
 
 Tasks:
 - Decodes the binary files
@@ -16,9 +17,16 @@ Tasks:
 Outputs:
 - run_XXXXXXX_chan-Y_alldata.txt file for each channel that will be placed in the same folder as the inputs
 
+Notes:
+- The script has been modified to take the input folder and date as arguments from the command line, just like all of the other scripts. It will then 
+
+### Note:
+Since the hitbuffer decode adds its output files to the same input folder, the same IceCube data folder can be used to store the inputs to the hitbuffer decode script AND the pass1icecube script. Going forward, each script will create a new folder to store its outputs
+
 ## pass1icecube.py:
 Inputs:
-- Decoded hitbuffer data for each channel (run_XXXXXXX_chan-Y_alldata.txt for each channel). Note that the data must be contained in directories: run_XXXXXXX_YYYYMMDD/run_XXXXXXX/
+- Decoded hitbuffer data for each channel (run_XXXXXXX_chan-Y_alldata.txt for each channel). The script will ask for an input directory; the input directory must contain the full file path for each day: run_XXXXXXX_YYYYMMDD/run_XXXXXXX/{data files}. There should be a run_XXXXXXX_chan-Y_alldata.txt for each scintillator (although if a few are missing, it is still fine).
+
   
 Tasks:
 - Checks each channel to verify the times are valid and can be used for time matching
