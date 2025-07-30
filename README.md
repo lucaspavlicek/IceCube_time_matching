@@ -40,7 +40,11 @@ inputs:
 - pass2icecube data for chosen day and +/- 1 day
   
 tasks:
-- to do
+- will attempt to find a time match between the strictly selected events in pass2icecube and pass2infill
+- if a time match is found, it will shift the IceCube data accordingly, and then find IceCube, Infill pairs of calibration events to do a more accurate match
+- using the calibration pairs of events, it will make an additional linear fit to account for the IceCube clock seemingly counting seconds slightly faster than it should. 
+- finally, it will use scipy's make_smoothing_spline to fit a curve to the calibration events after the linear correction. this is to account for slight fluctuations in the IceCube clock speed throughout the day (likely caused by temperature)
+- using the constant offset, linear fit, and make smooth spline fit for each day's worth of data where a time match was found, the program will correct the original, full icecube data so that the times are accurate in UTC and prepare an output for one day
   
 outputs:
 - UTC timed decoded hitbuffer files (in the format of pass1icecube)
