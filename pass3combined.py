@@ -103,7 +103,7 @@ def timematch(icecubet, infillt):
     ax.set_title('Gaussian fit within '+'{:.2f}'.format(searchwidth)+' seconds of initial guess')
     plt.show(block=True)
     
-    return mu, sigma, sigma**2 < 0.02
+    return mu, sigma, sigma**2 < 0.02 #criteria for checking if there is a time match
 
 def timecorrection(mu, sigma):
     print('Applying constant correction to IceCube times\n. . .')
