@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 """
 @author: William and KIT
@@ -11,16 +12,45 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 
+# Path to mymods folder
 sys.path.append('Hitbuffer_decode_Will/mymods')
 from udaq_decoder import *
 from utils import *
 from log_parser import *
 
+print('Starting hitbuffer decode script\n. . .')
 #  The main variables needed to find the run data
 #-------------------------------------------------
-spooldir = 'run_0000010_20231201'
-# This is where your run data is stored
+if len(sys.argv) > 1:
+    directory = sys.argv[1]
+    print('Received directory from command line:', directory)
+else:
+    directory = input('In which directory is the IceCube data?')
+
+
+if len(sys.argv) > 2:
+    datestr = sys.argv[2]
+    print('Received date from command line:', datestr)
+else:
+    datestr = input('Which date? (enter in yyyymmdd):')
 #-------------------------------------------------
+
+found = False
+for file in os.listdir(directory):
+    if datestr in file:
+        if not found:
+            spooldir = directory + os.sep + file
+
+            found = True
+            if not os.path.isdir(directory + os.sep + file):
+                sys.exit('!!! Found a file containing the date but it is not a directory')
+            print('Found directory containing', datestr, 'named', file)
+            
+        else:
+            sys.exit('!!! Found another file/directory containing the date')
+
+if not found:
+    sys.exit('!!! No file/directory found containing the date')
 
 adc_values = np.arange(4096)
 
