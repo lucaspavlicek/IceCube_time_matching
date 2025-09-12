@@ -1,4 +1,4 @@
-Code for matching the IceCube times (that have no GPS time, unfortunately) to GPS-timed Infill data, and then correcting the IceCube times to be in UTC.
+Code for matching the IceCube times (that have no GPS time, unfortunately) to GPS-timed Telescope Array TALE Infill data, and then correcting the IceCube times to be in UTC.
 
 ## General notes:
 - The scripts are all encoded in utf-8 (as far as I can tell at least) which should run well on Linux machines but may have issues on other operating systems
@@ -18,7 +18,7 @@ Outputs:
 - run_XXXXXXX_chan-Y_alldata.txt file for each channel that will be placed in the same folder as the inputs
 
 Notes:
-- The script has been modified to take the input folder and date as arguments from the command line, just like all of the other scripts. It will then 
+- The script has been modified from William's and KIT's version to take the input folder name and date as arguments from the command line, just like all of the other scripts.
 
 ### Note:
 Since the hitbuffer decode adds its output files to the same input folder, the same IceCube data folder can be used to store the inputs to the hitbuffer decode script AND the pass1icecube script. Going forward, each script will create a new folder to store its outputs
@@ -77,4 +77,4 @@ Outputs:
 
 ## timematching.sh
 - This is a sample shell script to facilitate the entire time matching process. It is intended to be a working example to show how to supply the Python scripts with the correct dates.
-- Note from Lucas: At some point, we will need to loop over all the dates. I know the Python datetime package can work well for this, and possibly another .py script can be created to help organize the dates.
+- Note from Lucas: At some point, we will need to loop over all the dates. I know that the Python datetime package can work well for this, and possibly another .py script can be created to help organize the dates. Good luck!
