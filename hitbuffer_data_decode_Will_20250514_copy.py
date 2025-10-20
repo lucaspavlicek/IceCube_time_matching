@@ -23,14 +23,14 @@ print('Starting hitbuffer decode script\n. . .')
 #-------------------------------------------------
 if len(sys.argv) > 1:
     directory = sys.argv[1]
-    print('Received directory from command line:', directory)
+    print(f'Received directory from command line: {directory}')
 else:
     directory = input('In which directory is the IceCube data?')
 
 
 if len(sys.argv) > 2:
     datestr = sys.argv[2]
-    print('Received date from command line:', datestr)
+    print('Received date from command line: {datestr}')
 else:
     datestr = input('Which date? (enter in yyyymmdd):')
 #-------------------------------------------------
