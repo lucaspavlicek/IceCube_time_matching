@@ -30,7 +30,7 @@ else:
 
 if len(sys.argv) > 2:
     datestr = sys.argv[2]
-    print('Received date from command line: {datestr}')
+    print(f'Received date from command line: {datestr}')
 else:
     datestr = input('Which date? (enter in yyyymmdd):')
 #-------------------------------------------------
@@ -44,7 +44,7 @@ for file in os.listdir(directory):
             found = True
             if not os.path.isdir(directory + os.sep + file):
                 sys.exit('!!! Found a file containing the date but it is not a directory')
-            print('Found directory containing', datestr, 'named', file)
+            print(f'Found directory containing {datestr} named {file}')
             
         else:
             sys.exit('!!! Found another file/directory containing the date')
