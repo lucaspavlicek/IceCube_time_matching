@@ -20,7 +20,7 @@ datestr = input('Which date? (enter in yyyymmdd):')
 
 date = datetime.datetime(int(datestr[:4]), int(datestr[4:6]), int(datestr[6:]))
 
-newfmtdate = 'y'+date.strftime('%Y')+'m'+date.strftime('%m')+'d'+date.strftime('%d')
+newfmtdate = f'y{date.strftime('%Y')}m{date.strftime('%m')}d{date.strftime('%d')}'
 
 #this does the oversampling
 def getcounts(diffs, threshold, times):
@@ -44,9 +44,7 @@ def linregplot(subplot, x, y):
     subplot.plot(x, y, '.', color='#fc8961')
     subplot.plot(x, res.slope*(x) + res.intercept, 'k')
         
-    subplot.text((max(x) - min(x))*.6, (max(y) - min(y))*.9 + min(y), 'y = Ax + B\n' +
-                         'A = ' + '{:.6g}'.format(res.slope) + ' ± ' + '{:.6g}'.format(slopeuncert) + '\n' +
-                         'B = ' + '{:.6g}'.format(res.intercept) + ' ± ' + '{:.6g}'.format(intuncert), size=8)
+    subplot.text((max(x) - min(x))*.6, (max(y) - min(y))*.9 + min(y), f'y = Ax + B\nA = {res.slope:.6g} ± {slopeuncert:.6g}\nB = {res.intercept:.6g} ± {intuncert:.6g}', size=8)
 
     return res.slope, res.intercept, slopeuncert, intuncert
 
@@ -67,8 +65,8 @@ def timematch(icecubet, infillt):
     counts = getcounts(differences, 0.1, t)
     
     guess = t[np.argmax(counts)]
-    print('Oversampling finished, initial guess: ', guess)
-    print('Count number: ', max(counts))
+    print(f'Oversampling finished, initial guess: {guess}')
+    print(f'Count number: {max(counts)}')
     import psutil
     oversampled = []
     searchwidth = 1 #1 second should be plenty here    
@@ -83,10 +81,10 @@ def timematch(icecubet, infillt):
         after = len(oversampled)
         numlost = before - after
         
-    print('Fitting filtered oversampled data ( n = ', len(oversampled), ')\n. . .')
+    print(f'Fitting filtered oversampled data (n = {len(oversampled)})\n. . .')
     N = stats.norm
     mu, sigma = N.fit(oversampled)
-    print('Gaussian fit complete with parameters: µ = ', mu, ', σ = ', sigma)
+    print(f'Gaussian fit complete with parameters: µ = {mu}, σ = {sigma}')
     
     x = np.linspace(guess - searchwidth, guess + searchwidth, 1000)
     values, bins = np.histogram(oversampled, bins=10, density=True)
@@ -94,14 +92,14 @@ def timematch(icecubet, infillt):
     fig, ax = plt.subplots()import psutil
     
     ax.plot(x, N.pdf(x, mu, sigma), 'k', label='Fitted PDF')
-    ax.stairs(values, bins, fill=True, color='#fc8961', label='Oversampled ata')
-    ax.axvspan(mu - sigma, mu + sigma, alpha=0.2, color='grey', label='σ = '+'{:.6f}'.format(sigma))
-    ax.axvline(mu, color='k', ls='--', label='µ = '+'{:.6f}'.format(mu))
+    ax.stairs(values, bins, fill=True, color='#fc8961', label='Oversampled data')
+    ax.axvspan(mu - sigma, mu + sigma, alpha=0.2, color='grey', label=f'σ = {sigma:.6f}')
+    ax.axvline(mu, color='k', ls='--', label='µ = {mu:.6f}')
     ax.legend()
     ax.set_xlabel('Difference in time [s]')
     ax.set_ylabel('Probability density')
-    ax.set_title('Gaussian fit within '+'{:.2f}'.format(searchwidth)+' seconds of initial guess')
-    plt.show(block=True)
+    ax.set_title(f'Gaussian fit within {searchwidth:.2f} seconds of initial guess')
+    plt.show()
     
     return mu, sigma, sigma**2 < 0.02 #criteria for checking if there is a time match
 
@@ -132,7 +130,7 @@ def timecorrection(mu, sigma):
     
     xfixed = fixedicecube[icecubeindices]
     yfixed = fixedicecube[icecubeindices] - fixedinfill[infillindices]
-    print('Found IceCube, Infill matching pairs for calibration (', len(xfixed), 'data points ). Finding linear fit\n. . .')
+    print(f'Found IceCube, Infill matching pairs for calibration ({len(xfixed)} data points). Finding linear fit\n. . .')
 
     fig, ax = plt.subplots(2, gridspec_kw={'height_ratios': [2, 1]}, figsize=(6,8))
     fig.tight_layout(pad=4)
@@ -192,7 +190,7 @@ def timecorrection(mu, sigma):
     return A, B, spl, min(xfixed), max(xfixed)
 
 #load infill data
-path = 'Infill-pass2/'+newfmtdate+'-Infill-pass2/'+newfmtdate+'-Infill-pass2.csv'
+path = f'Infill-pass2/{newfmtdate}-Infill-pass2/{newfmtdate}-Infill-pass2.csv'
 if os.path.exists(path):
     infilldf = pd.read_csv(path)
     infilltimes = infilldf['Microseconds'].values/1000000
@@ -205,16 +203,16 @@ fitparams = []
 correctionparams = []
 for i in [-1, 0, 1]:
     datei = date + datetime.timedelta(days=i)
-    newfmtdatei = 'y'+datei.strftime('%Y')+'m'+datei.strftime('%m')+'d'+datei.strftime('%d')
-    path = 'IceCube-pass2/'+newfmtdatei+'-IceCube-pass2/'+newfmtdatei+'-IceCube-pass2.csv'
+    newfmtdatei = f'y{datei.strftime('%Y')}m{datei.strftime('%m')}d{datei.strftime('%d')}'
+    path = f'IceCube-pass2/{newfmtdatei}-IceCube-pass2/{newfmtdatei}-IceCube-pass2.csv'
     if os.path.exists(path):
         icecubedfi = pd.read_csv(path)
         icecubetimes = icecubedfi['avg_time'].values
-        print('Found IceCube data for ', newfmtdatei)
-        print('IceCube events: ', icecubetimes.shape, ', Infill events: ', infilltimes.shape)
+        print(f'Found IceCube data for {newfmtdatei}')
+        print(f'IceCube events: {icecubetimes.shape}, Infill events: {infilltimes.shape}')
         fitparams.append(timematch(icecubetimes, infilltimes))
     else:
-        print('!!! No IceCube data found for ', newfmtdatei, '. The script will try and proceed without this day')
+        print(f'!!! No IceCube data found for {newfmtdatei}. The script will try and proceed without this day')
         fitparams.append((False, False, False))
     if fitparams[-1][2]:
         correctionparams.append(timecorrection(fitparams[-1][0], fitparams[-1][1]))
@@ -223,13 +221,13 @@ for i in [-1, 0, 1]:
         correctionparams.append((False, False, False, False, False))
 
 #creates output directory unless it already exists
-if not os.path.exists('IceCube-pass3/'+newfmtdate+'-IceCube-pass3'):
-    os.makedirs('IceCube-pass3/'+newfmtdate+'-IceCube-pass3')
+if not os.path.exists('IceCube-pass3/{newfmtdate}-IceCube-pass3'):
+    os.makedirs('IceCube-pass3/{newfmtdate}-IceCube-pass3')
 
 #finds which scintillators we have data for
 validsds = []
 for i in np.linspace(1, 8, 8, dtype = int):
-    path = 'IceCube-pass1/'+newfmtdate+'-IceCube-pass1/'+newfmtdate+'-IceCube-c'+str(i)+'-pass1.csv'
+    path = f'IceCube-pass1/{newfmtdate}-IceCube-pass1/{newfmtdate}-IceCube-c{i}-pass1.csv'
     if os.path.exists(path):
         validsds.append(i)
 
@@ -238,16 +236,16 @@ if len(validsds) < 1:
 
 #creates output for each scintillator
 for sd in validsds:
-    print('Creating output for SD ', sd, '\n. . .')
+    print(f'Creating output for SD {sd}\n. . .')
     sdtimes = []
     sddata = []
     for i in range(3):
         datei = date + datetime.timedelta(days=i-1)
-        newfmtdatei = 'y'+datei.strftime('%Y')+'m'+datei.strftime('%m')+'d'+datei.strftime('%d')
+        newfmtdatei = f'y{datei.strftime('%Y')}m{datei.strftime('%m')}d{datei.strftime('%d')}'
         if fitparams[i][2]:
-            path = 'IceCube-pass1/'+newfmtdatei+'-IceCube-pass1/'+newfmtdatei+'-IceCube-c'+str(sd)+'-pass1.csv'
+            path = f'IceCube-pass1/{newfmtdatei}-IceCube-pass1/{newfmtdatei}-IceCube-c{sd}-pass1.csv'
             if os.path.exists(path):
-                print('Time match and file found for', newfmtdatei, '. Correcting times\n. . .')
+                print(f'Time match and file found for {newfmtdatei}. Correcting times\n. . .')
                 daytimes = []
                 daydata = []
                 with open(path, "r") as file:
@@ -280,18 +278,18 @@ for sd in validsds:
                 sdtimes.extend(daytimes)
                 sddata.extend(daydata)
                 process = psutil.Process()
-                print('mb of memory used: ', process.memory_info().rss/1000000)  # in megabytes
+                print(f'mb of memory used: {process.memory_info().rss/1000000}')  # in megabytes
                 del daytimes, daydata, mask
             else:
-                print('!!! No IceCube data found for', newfmtdatei, 'and channel', sd, '. The script will try and proceed')
+                print(f'!!! No IceCube data found for {newfmtdatei} and channel {sd}. The script will try and proceed')
         else:
-            print('No time match for date', newfmtdatei, '. Moving on to next day.')
+            print(f'No time match for date {newfmtdatei}. Moving on to next day.')
     outputdfi = pd.DataFrame(columns=columnnames[1:], data=sddata)
     outputdfi.insert(0, columnnames[0], sdtimes)
         
-    outpath = 'IceCube-pass3/'+newfmtdate+'-IceCube-pass3/'+newfmtdate+'-IceCube-c'+str(sd)+'-pass3.csv'
+    outpath = f'IceCube-pass3/{newfmtdate}-IceCube-pass3/{newfmtdate}-IceCube-c{sd}-pass3.csv'
     outputdfi.to_csv(outpath, index=False)
-    print('Made output for channel ', sd)
+    print(f'Made output for channel {sd}')
     process = psutil.Process()
-    print('mb of memory used: ', process.memory_info().rss/1000000)  # in megabytes
+    print(f'mb of memory used: {process.memory_info().rss/1000000}')  # in megabytes
     del sdtimes, sddata, outputdfi
