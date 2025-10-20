@@ -14,20 +14,20 @@ print('Starting pass 1 for IceCube script\n. . .')
 
 if len(sys.argv) > 1:
     directory = sys.argv[1]
-    print('Received directory from command line:', directory)
+    print(f'Received directory from command line: {directory}')
 else:
     directory = input('In which directory is the IceCube data?')
 
 
 if len(sys.argv) > 2:
     datestr = sys.argv[2]
-    print('Received date from command line:', datestr)
+    print(f'Received date from command line: {datestr}')
 else:
     datestr = input('Which date? (enter in yyyymmdd):')
 
 date = datetime.datetime(int(datestr[:4]), int(datestr[4:6]), int(datestr[6:]))
 
-newfmtdate = 'y'+date.strftime('%Y')+'m'+date.strftime('%m')+'d'+date.strftime('%d')
+newfmtdate = f'y{date.strftime('%Y')}m{date.strftime('%m')}d{date.strftime('%d')}'
 
 #finds the directory name that contains the chosen date
 found = False
@@ -39,7 +39,7 @@ for file in os.listdir(directory):
             found = True
             if not os.path.isdir(directory + os.sep + file):
                 sys.exit('!!! Found a file containing the date but it is not a directory')
-            print('Found directory containing', datestr, 'named', file)
+            print(f'Found directory containing {datestr} named {file}')
             
         else:
             sys.exit('!!! Found another file/directory containing the date')
@@ -48,8 +48,8 @@ if not found:
     sys.exit('!!! No file/directory found containing the date')
 
 #creates output directory unless it already exists
-if not os.path.exists('IceCube-pass1/'+newfmtdate+'-IceCube-pass1'):
-    os.makedirs('IceCube-pass1/'+newfmtdate+'-IceCube-pass1')   
+if not os.path.exists(f'IceCube-pass1/{newfmtdate}-IceCube-pass1'):
+    os.makedirs(f'IceCube-pass1/{newfmtdate}-IceCube-pass1')   
 
 #function to check if times are close to being sorted
 #to help verify that scintillator data is sound
@@ -64,32 +64,32 @@ def checksorted(t):
 #finds the constant to subtract from times
 firsts = []
 for i in np.linspace(1, 8, 8, dtype = int):
-    path = datafolder+'/run_'+run+'/run_'+run+'_chan-'+str(i)+'_alldata.txt'
+    path = f'{datafolder}/run_{run}/run_{run}_chan-{i}_alldata.txt'
     dfi = pd.read_csv(path, delimiter=' ', names=['time','ADC0','ADC2','ADC12','CPU_trigger','time/threshold'], nrows=1)
     firsts.append(dfi['time'][0])
     del dfi
 
 constant = min(firsts)
-print('Found constant:', constant)
+print(f'Found constant: {constant}')
 
 #checks that the times are sound and if they are, creates output csv
 for i in np.linspace(1, 8, 8, dtype = int):
-    path = datafolder+'/run_'+run+'/run_'+run+'_chan-'+str(i)+'_alldata.txt'
+    path = f'{datafolder}/run_{run}/run_{run}_chan-{i}_alldata.txt'
     dfi = pd.read_csv(path, delimiter=' ', names=['time','ADC0','ADC2','ADC12','CPU_trigger','time/threshold'])
     ti = dfi['time'].values - constant
     if checksorted(ti):
         if ti[-1] < 86400:
-            print('Channel '+str(i)+' times are good')
+            print(f'Channel {i} times are good')
         else:
-            print('!!! Channel '+str(i)+' times range greater than 86400')
+            print(f'!!! Channel {i} times range greater than 86400')
             continue
     else:
-        print('!!! Channel '+str(i)+' times are not in ascending order')
+        print(f'!!! Channel {i} times are not in ascending order')
         continue
 
     dfi['time'] = ti
-    dfi.sort_values('time').to_csv('IceCube-pass1/'+newfmtdate+'-IceCube-pass1/'+newfmtdate+'-IceCube-c'+str(i)+'-pass1.csv', index=False)
-    print('Made csv for channel '+str(i))
+    dfi.sort_values('time').to_csv(f'IceCube-pass1/{newfmtdate}-IceCube-pass1/{newfmtdate}-IceCube-c{i}-pass1.csv', index=False)
+    print(f'Made csv for channel {i}')
 
     del dfi
     
