@@ -3,7 +3,7 @@
 
 """
 @author: William and KIT
-Lucas's copy
+Lucas's version
 """
 
 import sys, os

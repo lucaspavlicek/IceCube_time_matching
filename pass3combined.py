@@ -20,7 +20,7 @@ datestr = input('Which date? (enter in yyyymmdd):')
 
 date = datetime.datetime(int(datestr[:4]), int(datestr[4:6]), int(datestr[6:]))
 
-newfmtdate = f'y{date.strftime('%Y')}m{date.strftime('%m')}d{date.strftime('%d')}'
+newfmtdate = date.strftime('y%Ym%md%d')
 
 #this does the oversampling
 def getcounts(diffs, threshold, times):
@@ -89,7 +89,7 @@ def timematch(icecubet, infillt):
     x = np.linspace(guess - searchwidth, guess + searchwidth, 1000)
     values, bins = np.histogram(oversampled, bins=10, density=True)
     
-    fig, ax = plt.subplots()import psutil
+    fig, ax = plt.subplots()
     
     ax.plot(x, N.pdf(x, mu, sigma), 'k', label='Fitted PDF')
     ax.stairs(values, bins, fill=True, color='#fc8961', label='Oversampled data')
@@ -203,7 +203,7 @@ fitparams = []
 correctionparams = []
 for i in [-1, 0, 1]:
     datei = date + datetime.timedelta(days=i)
-    newfmtdatei = f'y{datei.strftime('%Y')}m{datei.strftime('%m')}d{datei.strftime('%d')}'
+    newfmtdatei = datei.strftime('y%Ym%md%d')
     path = f'IceCube-pass2/{newfmtdatei}-IceCube-pass2/{newfmtdatei}-IceCube-pass2.csv'
     if os.path.exists(path):
         icecubedfi = pd.read_csv(path)
@@ -221,8 +221,8 @@ for i in [-1, 0, 1]:
         correctionparams.append((False, False, False, False, False))
 
 #creates output directory unless it already exists
-if not os.path.exists('IceCube-pass3/{newfmtdate}-IceCube-pass3'):
-    os.makedirs('IceCube-pass3/{newfmtdate}-IceCube-pass3')
+if not os.path.exists(f'IceCube-pass3/{newfmtdate}-IceCube-pass3'):
+    os.makedirs(f'IceCube-pass3/{newfmtdate}-IceCube-pass3')
 
 #finds which scintillators we have data for
 validsds = []
@@ -241,7 +241,7 @@ for sd in validsds:
     sddata = []
     for i in range(3):
         datei = date + datetime.timedelta(days=i-1)
-        newfmtdatei = f'y{datei.strftime('%Y')}m{datei.strftime('%m')}d{datei.strftime('%d')}'
+        newfmtdatei = datei.strftime('y%Ym%md%d')
         if fitparams[i][2]:
             path = f'IceCube-pass1/{newfmtdatei}-IceCube-pass1/{newfmtdatei}-IceCube-c{sd}-pass1.csv'
             if os.path.exists(path):

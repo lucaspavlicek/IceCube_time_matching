@@ -20,7 +20,7 @@ else:
 
 date = datetime.datetime(int(datestr[:4]), int(datestr[4:6]), int(datestr[6:]))
 
-newfmtdate = f'y{date.strftime('%Y')}m{date.strftime('%m')}d{date.strftime('%d')}'
+newfmtdate = date.strftime('y%Ym%md%d')
 
 def ncomparison(times, threshold):
     n = len(times)
@@ -73,9 +73,9 @@ def createoutput(i, sds, outputpath):
         path = f'IceCube-pass1/{newfmtdate}-IceCube-pass1/{newfmtdate}-IceCube-c{sds[j]}-pass1.csv'
         dfj = pd.read_csv(path)
         matchtimes[:, j] = dfj['time'].values[i[:, j]]
-        c = 'c'+str(sds[j])
+        c = f'c{sds[j]}'
         
-        output[c+'_index'] = i[:, j]
+        output[f'{c}_index'] = i[:, j]
         del dfj, c
 
     output['avg_time'] = np.mean(matchtimes, axis=1)

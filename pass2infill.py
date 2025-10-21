@@ -26,7 +26,7 @@ else:
 
 date = datetime.datetime(int(datestr[:4]), int(datestr[4:6]), int(datestr[6:]))
 
-newfmtdate = f'y{date.strftime('%Y')}m{date.strftime('%m')}d{date.strftime('%d')}'
+newfmtdate = date.strftime('y%Ym%md%d')
 
 #finds the directory name that contains the chosen date
 def finddir(directory, datestr):
@@ -102,22 +102,16 @@ def timingFile(events, i):
             file.write(line + "\n")
 
     return
+ 
+#creates output directory unless it already exists
+if not os.path.exists(f'Infill-pass2/{newfmtdate}-Infill-pass2'):
+    os.makedirs(f'Infill-pass2/{newfmtdate}-Infill-pass2')
+    
+path = finddir(directory, datestr)
+print(f'Finding 9 detector coincidences for date: {newfmtdate}\n. . .')
+_, e9 = datareading(datestr, path)
 
-for i in [-1, 0, 1]:
-    datei = date + datetime.timedelta(days=i)
-    newfmtdatei = f'y{datei.strftime('%Y')}m{datei.strftime('%m')}d{datei.strftime('%d')}'
-    datestri = datei.strftime('%Y')+datei.strftime('%m')+datei.strftime('%d')
-    if not os.path.exists(f'Infill-pass2/{newfmtdatei}-Infill-pass2/{newfmtdatei}-Infill-pass2.csv'):
-        #creates output directory unless it already exists
-        if not os.path.exists('Infill-pass2/{newfmtdatei}-Infill-pass2'):
-            os.makedirs('Infill-pass2/{newfmtdatei}-Infill-pass2')
-        pathi = finddir(directory, datestri)
-        print(f'Finding 9 detector coincidences for date: {newfmtdatei}\n. . .')
-        _, e9 = datareading(datestri, pathi)
-
-        print('Creating output\n. . .')
-        timingFile(e9, newfmtdatei)
+print('Creating output\n. . .')
+timingFile(e9, newfmtdate)
     	
-    else:
-        print(f'File for date {newfmtdatei} already exists')
 print('Pass 2 Infill done')

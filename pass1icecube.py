@@ -27,7 +27,7 @@ else:
 
 date = datetime.datetime(int(datestr[:4]), int(datestr[4:6]), int(datestr[6:]))
 
-newfmtdate = f'y{date.strftime('%Y')}m{date.strftime('%m')}d{date.strftime('%d')}'
+newfmtdate = date.strftime('y%Ym%md%d')
 
 #finds the directory name that contains the chosen date
 found = False
