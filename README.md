@@ -80,4 +80,4 @@ Outputs:
 
 ## timematching.sh
 - This is a sample shell script to facilitate the entire time matching process. It is intended to be a working example to show how to supply the Python scripts with the correct dates.
-- Note from Lucas: At some point, we will need to loop over all the dates. I know that the Python datetime package can work well for this, and possibly another .py script can be created to help organize the dates. Good luck!
+- This works great for one or a few days of corrections, but in order to correct several months, it might be better to create some "main" Python script that organizes everything. The datetime package for Python will make looping through dates easy–probably easier than it would be to do in a shell script. The only problem is that the Python scripts are not set up for this at the moment.
