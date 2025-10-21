@@ -5,11 +5,13 @@ Code for matching the IceCube times (that have no GPS time, unfortunately) to GP
 - Each of the passX... scripts is looking to get a date in the format of YYYYMMDD from either the command line, or if there is no input, it will ask the user to input a date. In addition, a couple of them are also looking for an input directory name. The scripts will likely have a problem if you try and run the code from a notebook.
 - The scripts after pass1icecube and pass2infill will work from the outputs of the previous scripts as is.
 - This allows us to easily industrialize the process with a shell script or something. An example shell script will be included.
-- My scripts aren't always the cleanest. They also have some comments to help the user, but they aren't very thorough. Good luck!
+- This repository does not contain the input data, nor some custom-made packages needed. These are things we want to keep private.
+- This is all still a work-in-progress.
 
 ## hitbuffer_data_decode_....py
 Inputs:
 - Uncompressed folder of IceCube data. The script will ask for an input directory; the input directory must contain the full file path for each day: run_XXXXXXX_YYYYMMDD/run_XXXXXXX/{data files}. There should be a run_XXXXXXX_chan-Y.bin for each scintillator (although if a few are missing, it is still fine).
+- mymods folder (see notes).
 
 Tasks:
 - Decodes the binary files
@@ -18,6 +20,7 @@ Outputs:
 - run_XXXXXXX_chan-Y_alldata.txt file for each channel that will be placed in the same folder as the inputs
 
 Notes:
+- This script requires packages made by KIT, stored in a directory called 'mymods'. I won't put those here to keep them private. This is a high-level script. It is only included in this repository because I have modified it.
 - The script has been modified from William's and KIT's version to take the input folder name and date as arguments from the command line, just like all of the other scripts.
 
 ### Note:
@@ -58,7 +61,7 @@ Tasks:
 Outputs:
 - A .csv file containing only the time of the filtered events (these events will be used to find a time match)
 
-## pass2combined.py:
+## pass3combined.py:
 Inputs:
 - pass2infill data for chosen day
 - pass1icecube data for chosen day and +/- 1 day (will work with at least one of the days)
