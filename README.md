@@ -8,6 +8,30 @@ Code for matching the IceCube times (that have no GPS time, unfortunately) to GP
 - This repository does not contain the input data, nor some custom-made packages needed. These are things we want to keep private.
 - This is all still a work-in-progress.
 
+## Directory structure:
+The code, as it is, expects this directory structure:
+```.
+└── working directory/
+    ├── hitbuffer_data_decode... (only if needed)
+    ├── pass1icecube.py
+    ├── pass2icecube.py
+    ├── pass2infill.py
+    ├── pass3combined.py
+    ├── timematching.sh (or your own script, not needed if you are just testing)
+    ├── IceCubedata (you can choose your own name)/
+    │   ├── run_xxxxxxx_yyyymmdd/
+    │   │   └── run_xxxxxxx/
+    │   │       ├── run_xxxxxxx_chan-1.bin (undecoded)
+    │   │       ├── run_xxxxxxx_chan-1_alldata.txt (decoded)
+    │   │       ├── run_xxxxxxx_chan-1-info.txt (not actually needed)
+    │   │       └── etc
+    │   └── etc
+    └── Infilldata (you can choose your own name)/
+        ├── infillsdcalibev_pass2_yymmdd.event
+        └── etc
+```
+Note that new directories and files will be created as the code runs.
+
 ## hitbuffer_data_decode_....py
 Inputs:
 - Uncompressed folder of IceCube data. The script will ask for an input directory; the input directory must contain the full file path for each day: run_XXXXXXX_YYYYMMDD/run_XXXXXXX/{data files}. There should be a run_XXXXXXX_chan-Y.bin for each scintillator (although if a few are missing, it is still fine).
