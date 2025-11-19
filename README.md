@@ -21,9 +21,9 @@ The code, as it is, expects this directory structure:
     ├── IceCubedata (you can choose your own name)/
     │   ├── run_xxxxxxx_yyyymmdd/
     │   │   └── run_xxxxxxx/
-    │   │       ├── run_xxxxxxx_chan-y.bin (undecoded)
-    │   │       ├── run_xxxxxxx_chan-y_alldata.txt (decoded)
-    │   │       ├── run_xxxxxxx_chan-y-info.txt (not actually needed)
+    │   │       ├── run_xxxxxxx_chan-x.bin (undecoded)
+    │   │       ├── run_xxxxxxx_chan-x_alldata.txt (decoded)
+    │   │       ├── run_xxxxxxx_chan-x-info.txt (not actually needed)
     │   │       └── ...
     │   └── ...
     └── Infilldata (you can choose your own name)/
