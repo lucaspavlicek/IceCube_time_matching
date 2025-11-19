@@ -21,14 +21,14 @@ The code, as it is, expects this directory structure:
     ├── IceCubedata (you can choose your own name)/
     │   ├── run_xxxxxxx_yyyymmdd/
     │   │   └── run_xxxxxxx/
-    │   │       ├── run_xxxxxxx_chan-1.bin (undecoded)
-    │   │       ├── run_xxxxxxx_chan-1_alldata.txt (decoded)
-    │   │       ├── run_xxxxxxx_chan-1-info.txt (not actually needed)
-    │   │       └── etc
-    │   └── etc
+    │   │       ├── run_xxxxxxx_chan-y.bin (undecoded)
+    │   │       ├── run_xxxxxxx_chan-y_alldata.txt (decoded)
+    │   │       ├── run_xxxxxxx_chan-y-info.txt (not actually needed)
+    │   │       └── ...
+    │   └── ...
     └── Infilldata (you can choose your own name)/
         ├── infillsdcalibev_pass2_yymmdd.event
-        └── etc
+        └── ...
 ```
 Note that new directories and files will be created as the code runs.
 
