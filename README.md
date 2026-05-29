@@ -2,35 +2,12 @@ Code for matching the IceCube times (that have no GPS time, unfortunately) to GP
 
 ## General notes:
 - The scripts are all encoded in utf-8 (as far as I can tell at least) which should run well on Linux machines but may have issues on other operating systems
-- Each of the passX... scripts is looking to get a date in the format of YYYYMMDD from either the command line, or if there is no input, it will ask the user to input a date. In addition, a couple of them are also looking for an input directory name. The scripts will likely have a problem if you try and run the code from a notebook.
-- The scripts after pass1icecube and pass2infill will work from the outputs of the previous scripts as is.
-- This allows us to easily industrialize the process with a shell script or something. An example shell script will be included.
-- This repository does not contain the input data, nor some custom-made packages needed. These are things we want to keep private.
-- This is all still a work-in-progress.
+- The main code is in ```src/```. The data will go in ```data/```, but this does not come included. The folder structure of ```data/``` can be created by running ```paths.py```, or any script that imports it
+- The ```tests/``` and ```mock_data/``` directories mimic the structure of ```src/``` and ```data/``` respectively. The mock data does come included
+- The individula pass scipts in ```src/passes/``` can be ran by themselves or can be imported as a module and ran from the ```__main__.py``` script.
+-TODO: mention pathlib and paths.py.
 
-## Directory structure:
-The code, as it is, expects this directory structure:
-```.
-└── working directory/
-    ├── hitbuffer_data_decode... (only if needed)
-    ├── pass1icecube.py
-    ├── pass2icecube.py
-    ├── pass2infill.py
-    ├── pass3combined.py
-    ├── timematching.sh (or your own script, not needed if you are just testing)
-    ├── IceCubedata (you can choose your own name)/
-    │   ├── run_xxxxxxx_yyyymmdd/
-    │   │   └── run_xxxxxxx/
-    │   │       ├── run_xxxxxxx_chan-x.bin (undecoded)
-    │   │       ├── run_xxxxxxx_chan-x_alldata.txt (decoded)
-    │   │       ├── run_xxxxxxx_chan-x-info.txt (not actually needed)
-    │   │       └── ...
-    │   └── ...
-    └── Infilldata (you can choose your own name)/
-        ├── infillsdcalibev_pass2_yymmdd.event (make sure these are uncompressed)
-        └── ...
-```
-Note that new directories and files will be created as the code runs.
+## TODO: add directions to install dependencies, run the repository, and to run tests
 
 ## hitbuffer_data_decode_....py
 Inputs:
@@ -76,7 +53,7 @@ Outputs:
 
 ## pass2infill.py:
 Inputs:
-- Reconstructed Infill SD data by ICRR (infillsdcalibev_pass2_YYMMDD.event). NOTE: the input data is already labeled pass 2, and the output is also labeled pass 2. Sorry for the confusion.
+- Reconstructed Infill SD data by ICRR (infillsdcalibev_pass2_YYMMDD.event.bz2). NOTE: the input data is already labeled pass 2, and the output is also labeled pass 2. Sorry for the confusion.
   
 Tasks:
 - Keep only the events that trigger all 9 SDs surrounding the IceCube SAE test station
@@ -102,6 +79,12 @@ Outputs:
 - UTC timed decoded hitbuffer files (in the format of pass1icecube)
 - Possibly more if we want
 
-## timematching.sh
-- This is a sample shell script to facilitate the entire time matching process. It is intended to be a working example to show how to supply the Python scripts with the correct dates.
-- This works great for one or a few days of corrections, but in order to correct several months, it might be better to create some "main" Python script that organizes everything. The datetime package for Python will make looping through dates easy–probably easier than it would be to do in a shell script. The only problem is that the Python scripts are not set up for this at the moment.
+## __main__.py:
+The main organization script. TODO: add more
+
+## plans
+- update ```src/hitbuffer_data_decode_Will_20250514_copy.py```
+- add a lot more tests
+- apply a consistent variable naming convention
+- clean up code. Stop using ```sys.exit()``` and raise errors instead. Move helper functions out. Shorten monster functions. finish the switch to ```pathlib``` from os. And much much more.
+- optimize code: stop using ```pd.read_csv()``` when it is overkill. use ```csv.reader()```. Look for other inefficiencies.

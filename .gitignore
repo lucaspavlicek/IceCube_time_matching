@@ -1,0 +1,9 @@
+#ignore the following
+data/*
+.conda/
+__pycache__/
+.ipynb_checkpoints/
+.pytest_cache/
+.vscode/
+build/
+IceCube_time_matching.egg-info/
