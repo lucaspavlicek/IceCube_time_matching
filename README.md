@@ -5,9 +5,6 @@ Code for matching the IceCube times (that have no GPS time, unfortunately) to GP
 - The main code is in ```src/```. The data will go in ```data/```, but this does not come included. The folder structure of ```data/``` can be created by running ```paths.py```, or any script that imports it
 - The ```tests/``` and ```mock_data/``` directories mimic the structure of ```src/``` and ```data/``` respectively. The mock data does come included
 - The individula pass scipts in ```src/passes/``` can be ran by themselves or can be imported as a module and ran from the ```__main__.py``` script.
-- TODO: mention pathlib and paths.py.
-
-## TODO: add directions to install dependencies, run the repository, and to run tests
 
 ## Installation
 ### Clone the repository
