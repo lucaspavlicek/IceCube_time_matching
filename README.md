@@ -5,14 +5,77 @@ Code for matching the IceCube times (that have no GPS time, unfortunately) to GP
 - The main code is in ```src/```. The data will go in ```data/```, but this does not come included. The folder structure of ```data/``` can be created by running ```paths.py```, or any script that imports it
 - The ```tests/``` and ```mock_data/``` directories mimic the structure of ```src/``` and ```data/``` respectively. The mock data does come included
 - The individula pass scipts in ```src/passes/``` can be ran by themselves or can be imported as a module and ran from the ```__main__.py``` script.
--TODO: mention pathlib and paths.py.
+- TODO: mention pathlib and paths.py.
 
 ## TODO: add directions to install dependencies, run the repository, and to run tests
 
-## hitbuffer_data_decode_....py
+## Installation
+### Clone the repository
+```git clone https://github.com/lucaspavlicek/IceCube_time_matching.git```
+
+### Navigate to the repository
+```cd IceCube_time_matching```
+
+### Install dependencies with pip
+- with dev dependencies (needed to run tests):
+```pip install -e '.[dev]'```
+- without dev dependencies:
+```pip install -e .```
+
+## Tests
+Unit tests are written in pytest. See their documentation for more details. The repository comes with the mock data needed to run the tests.
+
+### Run all tests
+From the root of the repository, run ```pytest```.
+
+See the [pytest documentation](https://docs.pytest.org/en/stable/) for running individual tests and other options.
+
+### To use the memray plugin to track memory
+Place the ```--memray``` option at the end of a command. For example: ```pytest --memray```.
+
+See the [pytest-memray documentation](https://pytest-memray.readthedocs.io/en/latest/) for more options.
+
+### Notes on more tests
+More tests will need to be written. There may come a time where multiple sets of mock data will be needed to test different edge cases. For now, I am trying to keep it contained to only one set of mock data.
+
+## Adding the real data
+The real data does not come included in the repository. Collaborators should have access to the data and will need to import the right IceCube and Infill data to the repository in a folder named ```data/``` at the root of the repository. The ```data/``` folder will need two subfolders named ```icecube_data/``` and ```infill_data/```.
+
+### IceCube data
+This codebase uses **decoded** hitbuffer files from the IceCube SAE. There may be a way to include the decoding scripts into the codebase, so that the project may begin with the undecoded binary data files in the future, but not yet. Place the uncompressed IceCube data (with the decoded files included) into the ```icecube_data/``` folder.
+
+### Infill data
+This codebase uses the 2025 reconstructed TALE Infill data by ICRR. Place the .bz2 data files for each day of Infill data into the ```infill_data/``` folder.
+
+### Input data file tree
+The file structure of the input data should look like this.
+```
+data/
+  icecube_data/
+    run_XXXXXXX_YYYYMMDD/
+      run_XXXXXXX/
+        run_XXXXXXX_chan-i_alldata.txt (needed)
+        run_XXXXXXX_chan-i-info.txt (not needed)
+        run_XXXXXXX_chan-i.bin (not needed)
+        run_XXXXXXX_chan-j_alldata.txt (needed)
+        ...
+    ...
+  infill_data/
+    infillsdcalibev_pass2_YYMMDD.event.bz2
+    ...
+```
+
+### Other notes
+- As the program runs, more intermediate folders will be generated that store the data after each pass. The "final" output data will be in ```IceCube-pass3/```
+- The file structure resembles the mock_data file structure.
+- Changed from previous versions, the input data folders must be named exactly now.
+- Changed from previous versions, the Infill data no longer needs to be uncompressed. The .bz2 files will work as is. In fact, the code expects the files to end in .bz2.
+
+## Python scripts
+### hitbuffer_data_decode_....py
 Inputs:
-- Uncompressed folder of IceCube data. The script will ask for an input directory; the input directory must contain the full file path for each day: run_XXXXXXX_YYYYMMDD/run_XXXXXXX/{data files}. There should be a run_XXXXXXX_chan-Y.bin for each scintillator (although if a few are missing, it is still fine).
-- mymods folder (see notes).
+- Uncompressed folder of IceCube data. There should be a run_XXXXXXX_chan-Y.bin for each scintillator (although if a few are missing, it is still fine).
+- mymods folder (a needed submodule which is not mine to distribute).
 
 Tasks:
 - Decodes the binary files
@@ -22,14 +85,11 @@ Outputs:
 
 Notes:
 - This script requires packages made by KIT, stored in a directory called 'mymods'. I won't put those here to keep them private. This is a high-level script. It is only included in this repository because I have modified it.
-- The script has been modified from William's and KIT's version to take the input folder name and date as arguments from the command line, just like all of the other scripts.
+- This one is out of date, and isn't being used yet.
 
-### Note:
-Since the hitbuffer decode adds its output files to the same input folder, the same IceCube data folder can be used to store the inputs to the hitbuffer decode script AND the pass1icecube script. Going forward, each script will create a new folder to store its outputs
-
-## pass1icecube.py:
+### pass1_icecube.py:
 Inputs:
-- Decoded hitbuffer data for each channel. The script will ask for an input directory; the input directory must contain the full file path for each day: run_XXXXXXX_YYYYMMDD/run_XXXXXXX/{data files}. There should be a run_XXXXXXX_chan-Y_alldata.txt for each scintillator (although if a few are missing, it is still fine).
+- Decoded hitbuffer data for each channel. There should be a run_XXXXXXX_chan-Y_alldata.txt for each scintillator (although if a few are missing, it is still fine).
 
   
 Tasks:
@@ -40,7 +100,7 @@ Tasks:
 Outputs:
 - A folder with a .csv file of hitbuffer data, shifted, and sorted by time, for each channel deemed to have working data
 
-## pass2icecube.py:
+### pass2_icecube.py:
 Inputs:
 - pass1icecube data for each valid SD
 
@@ -51,7 +111,7 @@ Tasks:
 Outputs:
 - A .csv file with, for each big coincidence event, the index of the original hits in all working SDs, and the average time of all the hits (the average time will be used to find a time match)
 
-## pass2infill.py:
+### pass2_infill.py:
 Inputs:
 - Reconstructed Infill SD data by ICRR (infillsdcalibev_pass2_YYMMDD.event.bz2). NOTE: the input data is already labeled pass 2, and the output is also labeled pass 2. Sorry for the confusion.
   
@@ -62,7 +122,7 @@ Tasks:
 Outputs:
 - A .csv file containing only the time of the filtered events (these events will be used to find a time match)
 
-## pass3combined.py:
+### pass3_combined.py:
 Inputs:
 - pass2infill data for chosen day
 - pass1icecube data for chosen day and +/- 1 day (will work with at least one of the days)
@@ -79,8 +139,8 @@ Outputs:
 - UTC timed decoded hitbuffer files (in the format of pass1icecube)
 - Possibly more if we want
 
-## __main__.py:
-The main organization script. TODO: add more
+### main.py:
+The main organization script. As is, this script will time match IceCube data for 2023-12-22. Will need to be changed when the code is ready to deploy.
 
 ## plans
 - update ```src/hitbuffer_data_decode_Will_20250514_copy.py```

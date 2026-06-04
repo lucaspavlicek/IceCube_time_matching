@@ -102,7 +102,7 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
         ax.set_title(f'Gaussian fit within {searchwidth:.2f} seconds of initial guess')
         plt.show()
         
-        return mu, sigma, sigma**2 < 0.02 #criteria for checking if there is a time match
+        return mu, sigma, (sigma**2 < 0.02 and max(counts) > 10) #criteria for checking if there is a time match. needs to be cleaned up eventually.s
     
     def timecorrection(mu, sigma):
         print('Applying constant correction to IceCube times\n. . .')
@@ -121,8 +121,8 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
             before = len(icecubeindices)
             res = stats.linregress(x, y)
             d = np.abs(y - (res.slope*(x) + res.intercept))
-            icecubeindices = icecubeindices[stats.zscore(d) < 6]
-            infillindices = infillindices[stats.zscore(d) < 6]
+            icecubeindices = icecubeindices[stats.zscore(d) < 4]
+            infillindices = infillindices[stats.zscore(d) < 4]
             after = len(icecubeindices)
             
             numlost = before - after

@@ -5,6 +5,7 @@
 @author: William and KIT
 Lucas's version
 """
+#NOT READY YET
 
 import sys, os
 import glob

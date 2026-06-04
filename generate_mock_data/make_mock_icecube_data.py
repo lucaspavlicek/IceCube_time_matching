@@ -11,7 +11,7 @@ for d in [1, 2, 3]:
         with open(ICECUBE_PASS2_DIR / f'y2023m12d2{d}-IceCube-pass2' / f'y2023m12d2{d}-IceCube-pass2.csv', 'r') as f:
             next(f)
             for i, line in enumerate(f, start=1):
-                if i % 30 == 0:
+                if i % 10 == 0:
                     indices.append(int(line.split(',')[c-1]))
 
         in_path = ICECUBE_DATA_DIR / f'{runs[d-1]}_2023122{d}' / runs[d-1] / f'{runs[d-1]}_chan-{c}_alldata.txt'
