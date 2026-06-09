@@ -4,7 +4,7 @@ Code for matching the IceCube times (that have no GPS time, unfortunately) to GP
 - The scripts are all encoded in utf-8 (as far as I can tell at least) which should run well on Linux machines but may have issues on other operating systems
 - The main code is in ```src/```. The data will go in ```data/```, but this does not come included. The folder structure of ```data/``` can be created by running ```paths.py```, or any script that imports it
 - The ```tests/``` and ```mock_data/``` directories mimic the structure of ```src/``` and ```data/``` respectively. The mock data does come included
-- The individula pass scipts in ```src/passes/``` can be ran by themselves or can be imported as a module and ran from the ```__main__.py``` script.
+- The individula pass scipts in ```src/passes/``` can be ran by themselves or can be imported as a module and ran from the ```main.py``` script.
 
 ## Installation
 ### Clone the repository
@@ -67,6 +67,14 @@ data/
 - The file structure resembles the mock_data file structure.
 - Changed from previous versions, the input data folders must be named exactly now.
 - Changed from previous versions, the Infill data no longer needs to be uncompressed. The .bz2 files will work as is. In fact, the code expects the files to end in .bz2.
+
+## Running the program with real data
+- Simply excecute the ```main.py``` script from the root of the repository.
+```python src/main.py```
+- Note the script currently only runs time matching for December 22nd, 2023. That can be changed.
+- It is also possible to run any individual pass on its own. For example:
+```python src/passes/pass1_icecube.py```
+- Note that when run individually, the passes with ask for user input in the command line.
 
 ## Python scripts
 ### hitbuffer_data_decode_....py
