@@ -69,12 +69,13 @@ data/
 - Changed from previous versions, the Infill data no longer needs to be uncompressed. The .bz2 files will work as is. In fact, the code expects the files to end in .bz2.
 
 ## Running the program with real data
-- Simply excecute the ```main.py``` script from the root of the repository.
+### Excecute the ```main.py``` script. From the root of the repository, run:
 ```python src/main.py```
 - Note the script currently only runs time matching for December 22nd, 2023. That can be changed.
-- It is also possible to run any individual pass on its own. For example:
+### Run an individual pass. From the root of the repository, run:
 ```python src/passes/pass1_icecube.py```
 - Note that when run individually, the passes with ask for user input in the command line.
+- **Always run code from the root of the repository so that the filepaths work.**
 
 ## Python scripts
 ### hitbuffer_data_decode_....py
