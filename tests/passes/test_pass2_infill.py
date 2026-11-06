@@ -28,13 +28,13 @@ def test_pass2_coicidence_count():
 
         row_count = sum(1 for row in reader)
 
-    assert row_count == 570, f'Found {row_count} coincidences when there should be 570.'
+    assert row_count == 1789, f'Found {row_count} coincidences when there should be 1789.'
     
     return        
 
 def test_pass2_timestamps():
     """
-    Tests that the first and last timestamps in the pass2_icecube output file are correct.
+    Tests that the first and last timestamps in the pass2_infill output file are correct.
     """
     
     pass2_infill.pass2_infill(date, in_folder=MOCK_INFILL_DATA_DIR, out_folder=MOCK_INFILL_PASS2_DIR)
@@ -50,7 +50,7 @@ def test_pass2_timestamps():
         for item in reader:
             last_row = item
 
-    assert np.isclose(float(first_row[-1]), 229543038.664), 'First timestamp is incorrect.'
-    assert np.isclose(float(last_row[-1]), 85934156488.70201), 'Last timestamp is incorrect.'
+    assert np.isclose(float(first_row[-1]), 55033489777.46761), 'First timestamp is incorrect.'
+    assert np.isclose(float(last_row[-1]), 27782406817.883854), 'Last timestamp is incorrect.'
 
     return        

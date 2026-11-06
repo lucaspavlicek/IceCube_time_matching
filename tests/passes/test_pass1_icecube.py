@@ -20,7 +20,6 @@ def test_pass1_time_range():
     Tests that pass1_icecube output file timestamps are within 0 and 86400 seconds.
     """
     
-    print(MOCK_ICECUBE_DATA_DIR)
     pass1_icecube.pass1_icecube(date, in_folder=MOCK_ICECUBE_DATA_DIR, out_folder=MOCK_ICECUBE_PASS1_DIR)
 
     times = []

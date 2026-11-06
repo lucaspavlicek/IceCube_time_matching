@@ -1,13 +1,9 @@
 Code for matching the IceCube times (that have no GPS time, unfortunately) to GPS-timed Telescope Array TALE Infill data, and then correcting the IceCube times to be in UTC.
 
 ## General notes:
-- The scripts are all encoded in utf-8 (as far as I can tell at least) which should run well on Linux machines but may have issues on other operating systems
-- The main code is in ```src/```. The data will go in ```data/```, but this does not come included. The folder structure of ```data/``` can be created by running ```paths.py```, or any script that imports it
-- The ```tests/``` and ```mock_data/``` directories mimic the structure of ```src/``` and ```data/``` respectively. The mock data does come included
-- The individula pass scipts in ```src/passes/``` can be ran by themselves or can be imported as a module and ran from the ```__main__.py``` script.
-- TODO: mention pathlib and paths.py.
+- The main code is in ```src/```. The data will go in ```data/```, but the data does not come included. Instructions for adding data is below
+- The ```tests/``` and ```mock_data/``` directories mimic the structure of ```src/``` and ```data/``` respectively. The mock data comes included, so anyone can download the repository and run the timematching procedure on the mock data.
 
-## TODO: add directions to install dependencies, run the repository, and to run tests
 
 ## Installation
 ### Clone the repository
@@ -16,33 +12,23 @@ Code for matching the IceCube times (that have no GPS time, unfortunately) to GP
 ### Navigate to the repository
 ```cd IceCube_time_matching```
 
+### Create and activate an environment (recommended)
+- Create a new virtual envirnoment named .venv
+```python3 -m venv .venv```
+- Activate it
+```source .venv/bin/activate```
+
 ### Install dependencies with pip
 - with dev dependencies (needed to run tests):
 ```pip install -e '.[dev]'```
 - without dev dependencies:
 ```pip install -e .```
 
-## Tests
-Unit tests are written in pytest. See their documentation for more details. The repository comes with the mock data needed to run the tests.
-
-### Run all tests
-From the root of the repository, run ```pytest```.
-
-See the [pytest documentation](https://docs.pytest.org/en/stable/) for running individual tests and other options.
-
-### To use the memray plugin to track memory
-Place the ```--memray``` option at the end of a command. For example: ```pytest --memray```.
-
-See the [pytest-memray documentation](https://pytest-memray.readthedocs.io/en/latest/) for more options.
-
-### Notes on more tests
-More tests will need to be written. There may come a time where multiple sets of mock data will be needed to test different edge cases. For now, I am trying to keep it contained to only one set of mock data.
-
 ## Adding the real data
 The real data does not come included in the repository. Collaborators should have access to the data and will need to import the right IceCube and Infill data to the repository in a folder named ```data/``` at the root of the repository. The ```data/``` folder will need two subfolders named ```icecube_data/``` and ```infill_data/```.
 
 ### IceCube data
-This codebase uses **decoded** hitbuffer files from the IceCube SAE. There may be a way to include the decoding scripts into the codebase, so that the project may begin with the undecoded binary data files in the future, but not yet. Place the uncompressed IceCube data (with the decoded files included) into the ```icecube_data/``` folder.
+This codebase uses **decoded** hitbuffer files from the IceCube SAE built within TALE Infill. There may be a way to include the decoding scripts into the codebase, so that the project may begin with the undecoded binary data files in the future, but not yet. Place the uncompressed IceCube data (with the decoded files included) into the ```icecube_data/``` folder.
 
 ### Infill data
 This codebase uses the 2025 reconstructed TALE Infill data by ICRR. Place the .bz2 data files for each day of Infill data into the ```infill_data/``` folder.
@@ -65,11 +51,41 @@ data/
     ...
 ```
 
+## Usage
+- To run the full timematching procedure for a given day, from the project root run :
+```python src/timematch.py YYYYMMDD```
+
+Note that the date is a required positional argument, and the real data for the needed dates must be present. Always run the code from the root of the codebase.
+
+- To run the code on the mock data put "mock" in place of the date:
+```python src/timematch.py mock```
+
+- To run a specific pass only, run the pass script with the same date/mock convention. Like:
+```python src/passes/pass1_icecube.py YYYYMMDD```
+
+- All the scripts have a -h or --help option for (brief) usage instructions.
+
+## Tests
+Unit tests are written in pytest. See their documentation for more details. The repository comes with the mock data needed to run the tests.
+
+### Run all tests
+From the root of the repository, run ```pytest```.
+
+See the [pytest documentation](https://docs.pytest.org/en/stable/) for running individual tests and other options.
+
+### To use the memray plugin to track memory
+Place the ```--memray``` option at the end of a command. For example: ```pytest --memray```.
+
+See the [pytest-memray documentation](https://pytest-memray.readthedocs.io/en/latest/) for more options.
+
+### Notes on more tests
+More tests can be written. There may come a time where multiple sets of mock data will be needed to test different edge cases. For now, I am trying to keep it contained to only one set of mock data.
+
 ### Other notes
 - As the program runs, more intermediate folders will be generated that store the data after each pass. The "final" output data will be in ```IceCube-pass3/```
 - The file structure resembles the mock_data file structure.
 - Changed from previous versions, the input data folders must be named exactly now.
-- Changed from previous versions, the Infill data no longer needs to be uncompressed. The .bz2 files will work as is. In fact, the code expects the files to end in .bz2.
+- Changed from previous versions, the Infill data no longer needs to be uncompressed. The .bz2 files will work as is. In fact, the code expects the file names to end in .bz2.
 
 ## Python scripts
 ### hitbuffer_data_decode_....py

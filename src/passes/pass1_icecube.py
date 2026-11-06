@@ -4,12 +4,15 @@
 @author: lucas
 """
 
-from src.paths import *
 import csv
+import argparse
+from pathlib import Path
 from datetime import datetime
 import warnings
 import numpy as np
 import pandas as pd
+
+from src.paths import *
 
 def find_run(date: datetime, in_folder: Path):
     """
@@ -95,20 +98,24 @@ def pass1_icecube(date: datetime, in_folder: Path = ICECUBE_DATA_DIR, out_folder
 
 def main():
 
-    res = input('Use real or mock data? ("real" or "mock") : ')
+    parser = argparse.ArgumentParser(
+        description='Shifts decoded IceCube hitbuffer files so that they begin at time zero and (roughly) checks that the data is fine. Creates an output file with the same data with only the times shifted.'
+    )
 
-    if res == 'mock':
+    parser.add_argument(
+        'date', 
+        help='Date in the form of YYYYMMDD, or "mock" to use mock data.'
+    )
+
+    args = parser.parse_args()
+
+    if args.date == 'mock' or args.date == '00010102':
         pass1_icecube(datetime(1, 1, 2), MOCK_ICECUBE_DATA_DIR, MOCK_ICECUBE_PASS1_DIR)
 
-    elif res == 'real':
-        date_str = input('Which date? (YYYYMMDD) : ')
-        date = datetime.strptime(date_str, '%Y%m%d')
+    else:
+        date = datetime.strptime(args.date, '%Y%m%d')
         
         pass1_icecube(date)
-
-    else:
-        raise ValueError('Not a valid response.')
-        return
 
     return
 

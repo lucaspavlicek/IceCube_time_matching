@@ -6,6 +6,8 @@
 
 import sys
 import os
+import argparse
+from pathlib import Path
 from datetime import datetime
 import numpy as np
 import pandas as pd
@@ -114,20 +116,24 @@ def pass2_icecube(date: datetime, in_folder: Path = ICECUBE_PASS1_DIR, out_folde
 
 def main():
 
-    res = input('Use real or mock data? ("real" or "mock") : ')
+    parser = argparse.ArgumentParser(
+        description='Finds IceCube hits that were detected by all 8 SDs for a given day of data. Creates an output file with only those events.'
+    )
 
-    if res == 'mock':
+    parser.add_argument(
+        'date', 
+        help='Date in the form of YYYYMMDD, or "mock" to use mock data.'
+    )
+
+    args = parser.parse_args()
+
+    if args.date == 'mock' or args.date == '00010102':
         pass2_icecube(datetime(1, 1, 2), MOCK_ICECUBE_PASS1_DIR, MOCK_ICECUBE_PASS2_DIR)
 
-    elif res == 'real':
-        date_str = input('Which date? (YYYYMMDD) : ')
-        date = datetime.strptime(date_str, '%Y%m%d')
+    else:
+        date = datetime.strptime(args.date, '%Y%m%d')
         
         pass2_icecube(date)
-
-    else:
-        raise ValueError('Not a valid response.')
-        return
 
     return
 

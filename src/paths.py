@@ -1,12 +1,12 @@
 #src/paths.py
 from pathlib import Path
 
-#parent directory twice gets to the root
+
 #this variable can be used anywhere to access the root directory
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
 #define variables for other common paths from the ground up
-#there can also be used anywhere
+#these can also be used anywhere
 DATA_DIR = ROOT_DIR / "data"
 
 ICECUBE_DATA_DIR = DATA_DIR / "icecube_data"

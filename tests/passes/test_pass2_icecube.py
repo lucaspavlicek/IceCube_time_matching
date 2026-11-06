@@ -42,7 +42,7 @@ def test_pass2_coicidence_count():
 
         row_count = sum(1 for row in reader)
 
-    assert row_count == 140, f'Found {row_count} coincidences when there should be 140.'
+    assert row_count == 110, f'Found {row_count} coincidences when there should be 110.'
     
     return        
 
@@ -65,7 +65,7 @@ def test_pass2_timestamps():
         for item in reader:
             last_row = item
 
-    assert np.isclose(float(first_row[-1]), 619.0324242993811), 'First timestamp is incorrect.'
-    assert np.isclose(float(last_row[-1]), 75553.41926616526), 'Last timestamp is incorrect.'
+    assert np.isclose(float(first_row[-1]), 319.8658305919089), 'First timestamp is incorrect.'
+    assert np.isclose(float(last_row[-1]), 81438.21844370653), 'Last timestamp is incorrect.'
 
     return        

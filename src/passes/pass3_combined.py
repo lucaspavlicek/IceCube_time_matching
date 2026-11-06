@@ -6,6 +6,7 @@
 
 import sys
 import os
+import argparse
 from pathlib import Path
 from datetime import datetime, timedelta
 import pandas as pd
@@ -33,6 +34,25 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
             
     
         return count
+
+    def clearplot(ax, text='no data'):
+
+        ax.clear()
+
+        ax.axis('off')
+
+        ax.text(
+            0.5,
+            0.5,
+            text,
+            transform=ax.transAxes,
+            ha='center',
+            va='center',
+            fontsize=14,
+            color='gray',
+            alpha=0.5
+        )
+        return
     
     #creates and plots linear regression
     def linregplot(subplot, x, y):
@@ -45,7 +65,8 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
         subplot.plot(x, y, '.', color='#fc8961')
         subplot.plot(x, res.slope*(x) + res.intercept, 'k')
             
-        subplot.text((max(x) - min(x))*.6, (max(y) - min(y))*.9 + min(y), f'y = Ax + B\nA = {res.slope:.6g} ± {slopeuncert:.6g}\nB = {res.intercept:.6g} ± {intuncert:.6g}', size=8)
+        subplot.text((max(x) - min(x))*.7 + min(x), (max(y) - min(y))*.85 + min(y), f'y = Ax + B\nA = {res.slope:.3g} ± {slopeuncert:.3g}\nB = {res.intercept:.3g} ± {intuncert:.3g}', size=4)
+        subplot.tick_params(axis='both', which='major', labelsize=5)
     
         return res.slope, res.intercept, slopeuncert, intuncert
     
@@ -53,10 +74,11 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
     def residualplot(subplot, x, y, slope, intercept):
         subplot.plot(x, y - (slope*x + intercept), '.', color='#fc8961')
         subplot.plot(x, np.zeros(len(x)), 'k')
+        subplot.tick_params(axis='both', which='major', labelsize=5)
         return
     
     #finds a time match
-    def timematch(icecubet, infillt):
+    def timematch(icecubet, infillt, ax):
     
         differences = np.sort(np.subtract.outer(icecubet, infillt).reshape(-1))
             
@@ -90,21 +112,21 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
         x = np.linspace(guess - searchwidth, guess + searchwidth, 1000)
         values, bins = np.histogram(oversampled, bins=10, density=True)
         
-        fig, ax = plt.subplots()
-        
         ax.plot(x, N.pdf(x, mu, sigma), 'k', label='Fitted PDF')
         ax.stairs(values, bins, fill=True, color='#fc8961', label='Oversampled data')
         ax.axvspan(mu - sigma, mu + sigma, alpha=0.2, color='grey', label=f'σ = {sigma:.6f}')
         ax.axvline(mu, color='k', ls='--', label=f'µ = {mu:.6f}')
-        ax.legend()
-        ax.set_xlabel('Difference in time [s]')
-        ax.set_ylabel('Probability density')
-        ax.set_title(f'Gaussian fit within {searchwidth:.2f} seconds of initial guess')
-        plt.show()
+        ax.legend(fontsize=4)
+        ax.tick_params(axis='both', which='major', labelsize=5)
+        ax.xaxis.get_offset_text().set_fontsize(5)
+        ax.yaxis.get_offset_text().set_fontsize(5)
+        ax.set_xlabel('Difference in time [s]', fontsize=5)
+        ax.set_ylabel('Probability density', fontsize=5)
+        ax.set_title(f'Gaussian fit within {searchwidth:.2f} seconds of initial guess', fontsize=6)
         
-        return mu, sigma, (sigma**2 < 0.02 and max(counts) > 10) #criteria for checking if there is a time match. needs to be cleaned up eventually.s
+        return mu, sigma, (sigma**2 < 0.02 and max(counts) > 10) #criteria for checking if there is a time match. needs to be cleaned up eventually.
     
-    def timecorrection(mu, sigma):
+    def timecorrection(mu, sigma, ax1, ax2, ax3, ax4):
         print('Applying constant correction to IceCube times\n. . .')
         
         fixedicecube = (icecubetimes - mu)
@@ -132,21 +154,14 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
         xfixed = fixedicecube[icecubeindices]
         yfixed = fixedicecube[icecubeindices] - fixedinfill[infillindices]
         print(f'Found IceCube, Infill matching pairs for calibration ({len(xfixed)} data points). Finding linear fit\n. . .')
-    
-        fig, ax = plt.subplots(2, gridspec_kw={'height_ratios': [2, 1]}, figsize=(6,8))
-        fig.tight_layout(pad=4)
+
+        A, B, _, _ = linregplot(ax1, xfixed, yfixed)
+        ax1.set_title('IceCube - Infill times vs IceCube times', fontsize=6)
+        ax1.set_ylabel('IceCube - Infill time [s]', fontsize=5)
         
-        A, B, _, _ = linregplot(ax[0], xfixed, yfixed)
-        ax[0].set_title('IceCube - Infill times vs IceCube times')
-        ax[0].set_xlabel('IceCube time [s]')
-        ax[0].set_ylabel('IceCube - Infill time [s]')
-        
-        residualplot(ax[1], xfixed, yfixed, A, B)
-        ax[1].set_title('error of linear fit versus IceCube times')
-        ax[1].set_xlabel('IceCube time [s]')
-        ax[1].set_ylabel('(IceCube - Infill time) - prediction [s]')
-        
-        plt.show()
+        residualplot(ax2, xfixed, yfixed, A, B)
+        ax2.set_title('error of linear fit versus IceCube times', fontsize=6)
+        ax2.set_ylabel('(IceCube - Infill time) - prediction [s]', fontsize=5)
         
         print('Applying linear correction to IceCube times\n. . .')
         
@@ -161,22 +176,22 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
         
         spl = make_smoothing_spline(xfixed, yfixed, lam=1e9)
         
-        fig, ax = plt.subplots(2, gridspec_kw={'height_ratios': [2, 1]}, figsize=(6,8))
-        fig.tight_layout(pad=4)
+        ax3.plot(xfixed, yfixed, '.', color='#fc8961')
+        ax3.plot(xs, spl(xs), 'k')
+        ax3.set_title('Make Smooth Spline interpolation after linear fit', fontsize=6)
+        ax3.set_ylabel('Real values - predictions [s]', fontsize=5)
+        ax3.tick_params(axis='both', which='major', labelsize=5)
+        ax3.xaxis.get_offset_text().set_fontsize(5)
+        ax3.yaxis.get_offset_text().set_fontsize(5)
         
-        ax[0].plot(xfixed, yfixed, '.', color='#fc8961')
-        ax[0].plot(xs, spl(xs), 'k')
-        ax[0].set_title('Make Smooth Spline interpolation after linear fit')
-        ax[0].set_xlabel('IceCube time [s]')
-        ax[0].set_ylabel('Real values - predictions [s]')
-        
-        ax[1].plot(xfixed, yfixed - spl(xfixed), '.', color='#fc8961')
-        ax[1].plot(xs, np.zeros(len(xs)), 'k')
-        ax[1].set_title('Error in interpolated fit')
-        ax[1].set_xlabel('IceCube time [s]')
-        ax[1].set_ylabel('Residual [s]')
-        
-        plt.show()
+        ax4.plot(xfixed, yfixed - spl(xfixed), '.', color='#fc8961')
+        ax4.plot(xs, np.zeros(len(xs)), 'k')
+        ax4.set_title('Error in interpolated fit', fontsize=6)
+        ax4.set_xlabel('IceCube time [s]', fontsize=5)
+        ax4.set_ylabel('Residual [s]', fontsize=5)
+        ax4.tick_params(axis='both', which='major', labelsize=5)
+        ax4.xaxis.get_offset_text().set_fontsize(5)
+        ax4.yaxis.get_offset_text().set_fontsize(5)
         
         print('Applying interpolated correction to IceCube times\n. . .')
             
@@ -198,7 +213,10 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
     else:
         sys.exit('!!! No Infill data found')
     
-        
+
+    fig, ax = plt.subplots(5, 3, height_ratios=[2, 2, 1, 2, 1])
+    fig.set_size_inches(10, 8)
+
     icecubetimes = []
     fitparams = []
     correctionparams = []
@@ -211,16 +229,25 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
             icecubetimes = icecubedfi['avg_time'].values
             print(f'Found IceCube data for {newfmtdatei}')
             print(f'IceCube events: {icecubetimes.shape}, Infill events: {infilltimes.shape}')
-            fitparams.append(timematch(icecubetimes, infilltimes))
+            fitparams.append(timematch(icecubetimes, infilltimes, ax[0, i+1]))
         else:
             print(f'!!! No IceCube data found for {newfmtdatei}. The script will try and proceed without this day')
             fitparams.append((False, False, False))
+            clearplot(ax[0, i+1])
+
         if fitparams[-1][2]:
-            correctionparams.append(timecorrection(fitparams[-1][0], fitparams[-1][1]))
+            correctionparams.append(timecorrection(fitparams[-1][0], fitparams[-1][1], ax[1, i+1], ax[2, i+1], ax[3, i+1], ax[4, i+1]))
         else:
             print('No match found for this day. Moving onto the next.')
             correctionparams.append((False, False, False, False, False))
-    
+            clearplot(ax[1, i+1])
+            clearplot(ax[2, i+1])
+            clearplot(ax[3, i+1])
+            clearplot(ax[4, i+1])
+
+    plt.tight_layout()
+    plt.show()
+
     #creates output directory unless it already exists
     out_sub_folder = out_folder / f'{date.strftime('y%Ym%md%d')}-IceCube-pass3'
     out_sub_folder.mkdir(parents=True, exist_ok=True)
@@ -298,20 +325,24 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
 
 def main():
 
-    res = input('Use real or mock data? ("real" or "mock") : ')
+    parser = argparse.ArgumentParser(
+        description='Finds a time match between Infill and IceCube pass 2 data. Creates a correctly timed IceCube output file.'
+    )
 
-    if res == 'mock':
+    parser.add_argument(
+        'date', 
+        help='Date in the form of YYYYMMDD, or "mock" to use mock data.'
+    )
+
+    args = parser.parse_args()
+
+    if args.date == 'mock' or args.date == '00010102':
         pass3_combined(datetime(1, 1, 2), MOCK_ICECUBE_PASS1_DIR, MOCK_ICECUBE_PASS2_DIR, MOCK_INFILL_PASS2_DIR, MOCK_ICECUBE_PASS3_DIR)
 
-    elif res == 'real':
-        date_str = input('Which date? (YYYYMMDD) : ')
-        date = datetime.strptime(date_str, '%Y%m%d')
+    else:
+        date = datetime.strptime(args.date, '%Y%m%d')
         
         pass3_combined(date)
-
-    else:
-        raise ValueError('Not a valid response.')
-        return
 
     return
 

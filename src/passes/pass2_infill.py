@@ -7,6 +7,8 @@ modified by lucas
 
 import sys
 import os
+import argparse
+from pathlib import Path
 from datetime import datetime
 import bz2
 
@@ -110,20 +112,24 @@ def pass2_infill(date: datetime, in_folder: Path = INFILL_DATA_DIR, out_folder: 
 
 def main():
 
-    res = input('Use real or mock data? ("real" or "mock") : ')
+    parser = argparse.ArgumentParser(
+        description='Finds Infill events that were detected by all 9 SDs surrounding the IceCube SAE for a given day of data. Creates an output file with only those events.'
+    )
 
-    if res == 'mock':
+    parser.add_argument(
+        'date', 
+        help='Date in the form of YYYYMMDD, or "mock" to use mock data.'
+    )
+
+    args = parser.parse_args()
+
+    if args.date == 'mock' or args.date == '00010102':
         pass2_infill(datetime(1, 1, 2), MOCK_INFILL_DATA_DIR, MOCK_INFILL_PASS2_DIR)
 
-    elif res == 'real':
-        date_str = input('Which date? (YYYYMMDD) : ')
-        date = datetime.strptime(date_str, '%Y%m%d')
+    else:
+        date = datetime.strptime(args.date, '%Y%m%d')
         
         pass2_infill(date)
-
-    else:
-        raise ValueError('Not a valid response.')
-        return
 
     return
 
