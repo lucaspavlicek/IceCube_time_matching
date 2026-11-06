@@ -155,7 +155,7 @@ Outputs:
 - UTC timed decoded hitbuffer files (in the format of pass1icecube)
 - Possibly more if we want
 
-### main.py:
+### timematch.py:
 The main organization script. As is, this script will time match IceCube data for 2023-12-22. Will need to be changed when the code is ready to deploy.
 
 ## plans
