@@ -18,7 +18,15 @@ from scipy.interpolate import make_smoothing_spline
 from src.paths import *
 
 #This is a monster of a function and needs help
-def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DIR, icecube_pass2_folder: Path = ICECUBE_PASS2_DIR, infill_in_folder: Path = INFILL_PASS2_DIR, out_folder: Path = ICECUBE_PASS3_DIR):
+def pass3_combined(
+    date: datetime,
+    icecube_pass1_folder: Path = ICECUBE_PASS1_DIR,
+    icecube_pass2_folder: Path = ICECUBE_PASS2_DIR,
+    infill_in_folder: Path = INFILL_PASS2_DIR,
+    out_folder: Path = ICECUBE_PASS3_DIR,
+    hide_fig: bool = False,
+    save_fig: bool = False
+):
 
     print('Starting pass 3 script\n. . .')
     
@@ -216,6 +224,7 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
 
     fig, ax = plt.subplots(5, 3, height_ratios=[2, 2, 1, 2, 1])
     fig.set_size_inches(10, 8)
+    fig.suptitle(f'time match for {date.strftime('y%Ym%md%d')}')
 
     icecubetimes = []
     fitparams = []
@@ -240,13 +249,23 @@ def pass3_combined(date: datetime, icecube_pass1_folder: Path = ICECUBE_PASS1_DI
         else:
             print('No match found for this day. Moving onto the next.')
             correctionparams.append((False, False, False, False, False))
-            clearplot(ax[1, i+1])
-            clearplot(ax[2, i+1])
-            clearplot(ax[3, i+1])
-            clearplot(ax[4, i+1])
+            clearplot(ax[1, i+1], 'no timematch')
+            clearplot(ax[2, i+1], 'no timematch')
+            clearplot(ax[3, i+1], 'no timematch')
+            clearplot(ax[4, i+1], 'no timematch')
 
     plt.tight_layout()
-    plt.show()
+
+    if save_fig:
+        plot_dir = ROOT_DIR / 'plots'
+        plot_dir.mkdir(parents=True, exist_ok=True)
+
+        plt.savefig(plot_dir / f'{date.strftime('y%Ym%md%d')}.png')
+
+    if not hide_fig:
+        plt.show()
+
+    plt.close()
 
     #creates output directory unless it already exists
     out_sub_folder = out_folder / f'{date.strftime('y%Ym%md%d')}-IceCube-pass3'
@@ -331,18 +350,42 @@ def main():
 
     parser.add_argument(
         'date', 
-        help='Date in the form of YYYYMMDD, or "mock" to use mock data.'
+        help='date in the form of YYYYMMDD, or "mock" to use mock data'
+    )
+
+    parser.add_argument(
+        '--hideplot', 
+        action='store_true', 
+        help='will suppress output plot, shown by default'
+    )
+
+    parser.add_argument(
+        '--saveplot',
+        action='store_true', 
+        help='will save plot in plots/, off by default'
     )
 
     args = parser.parse_args()
 
     if args.date == 'mock' or args.date == '00010102':
-        pass3_combined(datetime(1, 1, 2), MOCK_ICECUBE_PASS1_DIR, MOCK_ICECUBE_PASS2_DIR, MOCK_INFILL_PASS2_DIR, MOCK_ICECUBE_PASS3_DIR)
+        pass3_combined(
+            date=datetime(1, 1, 2),
+            icecube_pass1_folder=MOCK_ICECUBE_PASS1_DIR,
+            icecube_pass2_folder=MOCK_ICECUBE_PASS2_DIR,
+            infill_in_folder=MOCK_INFILL_PASS2_DIR,
+            out_folder=MOCK_ICECUBE_PASS3_DIR,
+            hide_fig=args.hideplot,
+            save_fig=args.saveplot
+        )
 
     else:
         date = datetime.strptime(args.date, '%Y%m%d')
         
-        pass3_combined(date)
+        pass3_combined(
+            date=date,
+            hide_fig=args.hideplot,
+            save_fig=args.saveplot
+        )
 
     return
 

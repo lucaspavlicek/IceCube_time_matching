@@ -7,22 +7,34 @@ Code for matching the IceCube times (that have no GPS time, unfortunately) to GP
 
 ## Installation
 ### Clone the repository
-```git clone https://github.com/lucaspavlicek/IceCube_time_matching.git```
+```
+git clone https://github.com/lucaspavlicek/IceCube_time_matching.git
+```
 
 ### Navigate to the repository
-```cd IceCube_time_matching```
+```
+cd IceCube_time_matching
+```
 
 ### Create and activate an environment (recommended)
 - Create a new virtual envirnoment named .venv
-```python3 -m venv .venv```
+```
+python3 -m venv .venv
+```
 - Activate it
-```source .venv/bin/activate```
+```
+source .venv/bin/activate
+```
 
 ### Install dependencies with pip
-- with dev dependencies (needed to run tests):
-```pip install -e '.[dev]'```
-- without dev dependencies:
-```pip install -e .```
+- either with dev dependencies (needed to run tests):
+```
+pip install -e '.[dev]'
+```
+- or without dev dependencies:
+```
+pip install -e .
+```
 
 ## Adding the real data
 The real data does not come included in the repository. Collaborators should have access to the data and will need to import the right IceCube and Infill data to the repository in a folder named ```data/``` at the root of the repository. The ```data/``` folder will need two subfolders named ```icecube_data/``` and ```infill_data/```.
@@ -53,17 +65,28 @@ data/
 
 ## Usage
 - To run the full timematching procedure for a given day, from the project root run :
-```python src/timematch.py YYYYMMDD```
+```
+python src/timematch.py YYYYMMDD
+```
 
 Note that the date is a required positional argument, and the real data for the needed dates must be present. Always run the code from the root of the codebase.
 
 - To run the code on the mock data put "mock" in place of the date:
-```python src/timematch.py mock```
+```
+python src/timematch.py mock
+```
 
 - To run a specific pass only, run the pass script with the same date/mock convention. Like:
-```python src/passes/pass1_icecube.py YYYYMMDD```
+```
+python src/passes/pass1_icecube.py YYYYMMDD
+```
 
 - All the scripts have a -h or --help option for (brief) usage instructions.
+
+## Mock data
+The included mock data does not contain any lines from real data. The times are randomly generated to simulate both noise and real events, and the other parameters in the files are either randomly drawn from distributions parameterized by the real data, or just set to zero in some cases. The mock data is much smaller than the real data (especially compared with IceCube data), which allows it serve as a quick test. The real data takes me an hour to run per day, the mock data takes about 1 minute.
+
+The mock data comes with later passes, not just the input data. This is fine, the relevant output data is just overwritten each time a script is run.
 
 ## Tests
 Unit tests are written in pytest. See their documentation for more details. The repository comes with the mock data needed to run the tests.
@@ -88,6 +111,12 @@ More tests can be written. There may come a time where multiple sets of mock dat
 - Changed from previous versions, the Infill data no longer needs to be uncompressed. The .bz2 files will work as is. In fact, the code expects the file names to end in .bz2.
 
 ## Python scripts
+### timematch.py:
+- The main organization script. As is, the script expects a date argument and will time match IceCube data on that day +/- 1 day, with infill data from just the chosen day. It will run through all of the passes.
+
+### paths.py:
+- Contains path variables to be used as shorthands throughout the codebase.
+
 ### hitbuffer_data_decode_....py
 Inputs:
 - Uncompressed folder of IceCube data. There should be a run_XXXXXXX_chan-Y.bin for each scintillator (although if a few are missing, it is still fine).
@@ -155,12 +184,8 @@ Outputs:
 - UTC timed decoded hitbuffer files (in the format of pass1icecube)
 - Possibly more if we want
 
-### timematch.py:
-The main organization script. As is, this script will time match IceCube data for 2023-12-22. Will need to be changed when the code is ready to deploy.
-
-## plans
-- update ```src/hitbuffer_data_decode_Will_20250514_copy.py```
-- add a lot more tests
+## plans  
+- add a way to run the timematch code on output data, to see if the time offset is zero, as a verification
 - apply a consistent variable naming convention
-- clean up code. Stop using ```sys.exit()``` and raise errors instead. Move helper functions out. Shorten monster functions. finish the switch to ```pathlib``` from os. And much much more.
-- optimize code: stop using ```pd.read_csv()``` when it is overkill. use ```csv.reader()```. Look for other inefficiencies.
+- clean up code. Stop using ```sys.exit()``` and raise errors instead. Move helper functions out. Shorten monster functions. finish the switch to ```pathlib``` from os. And much more.
+- optimize code

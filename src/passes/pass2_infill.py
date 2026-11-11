@@ -118,7 +118,7 @@ def main():
 
     parser.add_argument(
         'date', 
-        help='Date in the form of YYYYMMDD, or "mock" to use mock data.'
+        help='date in the form of YYYYMMDD, or "mock" to use mock data'
     )
 
     args = parser.parse_args()

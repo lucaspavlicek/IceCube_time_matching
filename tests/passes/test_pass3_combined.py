@@ -41,8 +41,16 @@ def test_pass3_timestamp():
     """
     
     create_input_data()
-    pass3_combined.pass3_combined(date, MOCK_ICECUBE_PASS1_DIR, MOCK_ICECUBE_PASS2_DIR, MOCK_INFILL_PASS2_DIR, MOCK_ICECUBE_PASS3_DIR)
-    
+
+    pass3_combined.pass3_combined(
+        date=datetime(1, 1, 2),
+        icecube_pass1_folder=MOCK_ICECUBE_PASS1_DIR,
+        icecube_pass2_folder=MOCK_ICECUBE_PASS2_DIR,
+        infill_in_folder=MOCK_INFILL_PASS2_DIR,
+        out_folder=MOCK_ICECUBE_PASS3_DIR,
+        hide_fig=True,
+        save_fig=False
+    )
     first_timestamps_key = [
         25.981526027739964,
         25.9796217525202,
