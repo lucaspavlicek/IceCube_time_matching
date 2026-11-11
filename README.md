@@ -64,24 +64,23 @@ data/
 ```
 
 ## Usage
-- To run the full timematching procedure for a given day, from the project root run :
+To run the full timematching procedure for a given day, from the project root run :
 ```
 python src/timematch.py YYYYMMDD
 ```
 
-Note that the date is a required positional argument, and the real data for the needed dates must be present. Always run the code from the root of the codebase.
+- Note that the date is a required positional argument, and the real data for the needed dates must be present.
+- Always run the code from the root of the codebase.
+- To run the code on the mock data put "mock" in place of the date.
+- There are also optional --hideplot and --saveplot options. Run --help for details. 
 
-- To run the code on the mock data put "mock" in place of the date:
-```
-python src/timematch.py mock
-```
-
-- To run a specific pass only, run the pass script with the same date/mock convention. Like:
+To run a specific pass only, run the pass script with the same date/mock convention. Like:
 ```
 python src/passes/pass1_icecube.py YYYYMMDD
 ```
 
-- All the scripts have a -h or --help option for (brief) usage instructions.
+- Only the pass3combined script has the  --hideplot and --saveplot options.
+- All the passes have a --help option.
 
 ## Mock data
 The included mock data does not contain any lines from real data. The times are randomly generated to simulate both noise and real events, and the other parameters in the files are either randomly drawn from distributions parameterized by the real data, or just set to zero in some cases. The mock data is much smaller than the real data (especially compared with IceCube data), which allows it serve as a quick test. The real data takes me an hour to run per day, the mock data takes about 1 minute.
@@ -92,7 +91,10 @@ The mock data comes with later passes, not just the input data. This is fine, th
 Unit tests are written in pytest. See their documentation for more details. The repository comes with the mock data needed to run the tests.
 
 ### Run all tests
-From the root of the repository, run ```pytest```.
+From the root of the repository, run
+```
+pytest
+```
 
 See the [pytest documentation](https://docs.pytest.org/en/stable/) for running individual tests and other options.
 
